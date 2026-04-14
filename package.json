@@ -1,0 +1,11 @@
+{
+  "name": "chat-web-root",
+  "version": "1.0.0",
+  "description": "Root wrapper for Glitch deployment",
+  "scripts": {
+    "start": "cd Server && npm install && npm start"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}

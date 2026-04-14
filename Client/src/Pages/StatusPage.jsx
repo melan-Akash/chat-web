@@ -4,6 +4,7 @@ import { AppContext } from '../context/AppContext';
 import assets from '../assets/assets';
 import { Plus, MoreVertical, Lock, ArrowLeft, X, Crop, Type, Smile, Download, Send, PenTool, Wand2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import EmojiPicker from 'emoji-picker-react';
 
 const StatusPage = () => {
     const { authUser, myStatuses, otherStatuses, getStatuses, uploadStatus, isStatusesLoading, viewStatus } = useContext(AppContext);
@@ -13,6 +14,7 @@ const StatusPage = () => {
     const [caption, setCaption] = useState("");
     const [activeStatus, setActiveStatus] = useState(null); // The status being currently viewed
     const [isUploadingState, setIsUploadingState] = useState(false); // To handle loading state of send
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const fileInputRef = useRef(null);
 
     React.useEffect(() => {
@@ -191,7 +193,7 @@ const StatusPage = () => {
                 <div className="fixed inset-0 z-50 bg-[#0b141a]/95 backdrop-blur-md flex flex-col">
                     {/* Top Header */}
                     <div className="flex items-center justify-between p-4 bg-transparent mt-2">
-                        <button onClick={() => { setIsUploading(false); setImagePreview(null); if (fileInputRef.current) fileInputRef.current.value = ""; }} className="text-gray-400 hover:text-white transition-colors p-2">
+                        <button onClick={() => { setIsUploading(false); setImagePreview(null); setShowEmojiPicker(false); if (fileInputRef.current) fileInputRef.current.value = ""; }} className="text-gray-400 hover:text-white transition-colors p-2">
                             <X size={26} />
                         </button>
                         <div className="flex items-center gap-7 text-gray-400">
@@ -214,15 +216,31 @@ const StatusPage = () => {
                     {/* Bottom Section */}
                     <div className="flex flex-col items-center pb-6">
                         {/* Caption Input */}
-                        <div className="w-full max-w-2xl bg-[#202c33] rounded-3xl flex items-center px-4 py-3 mb-8 shadow-lg">
-                            <input
-                                type="text"
-                                value={caption}
-                                onChange={(e) => setCaption(e.target.value)}
-                                placeholder="Add a caption"
-                                className="flex-1 bg-transparent border-none outline-none text-white text-base ml-2 placeholder-[#8696a0]"
-                            />
-                            <Smile size={24} className="text-[#8696a0] hover:text-white cursor-pointer transition-colors ml-4" />
+                        <div className="relative w-full max-w-2xl mb-8">
+                            {showEmojiPicker && (
+                                <div className="absolute bottom-full right-4 mb-2 z-50">
+                                    <EmojiPicker
+                                        theme="dark"
+                                        onEmojiClick={(emojiObject) => {
+                                            setCaption(prev => prev + emojiObject.emoji);
+                                        }}
+                                    />
+                                </div>
+                            )}
+                            <div className="w-full bg-[#202c33] rounded-3xl flex items-center px-4 py-3 shadow-lg">
+                                <input
+                                    type="text"
+                                    value={caption}
+                                    onChange={(e) => setCaption(e.target.value)}
+                                    placeholder="Add a caption"
+                                    className="flex-1 bg-transparent border-none outline-none text-white text-base ml-2 placeholder-[#8696a0]"
+                                />
+                                <Smile 
+                                    size={24} 
+                                    className="text-[#8696a0] hover:text-white cursor-pointer transition-colors ml-4" 
+                                    onClick={() => setShowEmojiPicker(prev => !prev)}
+                                />
+                            </div>
                         </div>
 
                         {/* Bottom Footer Controls */}
@@ -255,6 +273,7 @@ const StatusPage = () => {
                                         setIsUploading(false);
                                         setImagePreview(null);
                                         setCaption("");
+                                        setShowEmojiPicker(false);
                                     } catch (error) {
                                         // Error is handled in context
                                     } finally {
